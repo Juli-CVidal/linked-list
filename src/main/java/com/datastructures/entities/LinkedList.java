@@ -108,12 +108,14 @@ public class LinkedList<T> {
 
         if (currentNode.getValue() == value) {
             this.head = currentNode.getNextNode();
+            this.length--;
             return true;
         }
         Node<T> nextNode = currentNode.getNextNode();
         while (nextNode != null) {
             if (nextNode.hasValue(value)) {
                 currentNode.setNextNode(nextNode.getNextNode());
+                this.length--;
                 return true;
             }
 
@@ -138,11 +140,13 @@ public class LinkedList<T> {
 
         if (index == 0) {
             this.head = this.head.getNextNode();
+            this.length--;
             return true;
         }
 
         Node<T> prevNode = getNodeAtIndex(index - 1);
         prevNode.setNextNode(prevNode.getNextNode().getNextNode());
+        this.length--;
         return true;
     }
 
