@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Arrays;
+import java.lang.reflect.Array;
 
 @Getter
 @Setter
@@ -34,13 +34,12 @@ public class LinkedList<T> {
      * @return T[] the list that contains all the elements of the LinkedList
      */
     public T[] toList() {
-        Object[] tempList = new Object[this.length];
+        T[] tempList = (T[]) Array.newInstance(head.getValue().getClass(), length);
         int index = 0;
-        for (Node<T> currentNode = this.head; currentNode != null; currentNode = currentNode.getNextNode()) {
+        for (Node<T> currentNode = head; currentNode != null; currentNode = currentNode.getNextNode()) {
             tempList[index++] = currentNode.getValue();
         }
-
-        return (T[]) Arrays.copyOf(tempList, this.length);
+        return tempList;
     }
 
 
@@ -103,28 +102,21 @@ public class LinkedList<T> {
     /**
      * @param value The value to be inserted
      * @param index The index where the value should be inserted
-     * @return true if insertion has been possible, otherwise return false
      */
-    public boolean insert(T value, int index) {
+    public void insert(T value, int index) {
         if (!isValidIndex(index)) {
             throw new IllegalArgumentException("Invalid index: " + index +
                     ". Must be between 0 and the LinkedList lenght");
         }
+
         if (index == 0) {
             add(value);
-            return true;
+            return;
         }
 
         Node<T> previousNode = getNodeAtIndex(index - 1);
-        if (previousNode == null) {
-            return false;
-        }
-
-        Node<T> newNode = new Node<>(value);
-        newNode.setNextNode(previousNode.getNextNode());
-        previousNode.setNextNode(newNode);
+        previousNode.setNextNode(new Node<>(value));
         this.length++;
-        return true;
     }
 
 
@@ -204,7 +196,7 @@ public class LinkedList<T> {
      * @param index The index to be evaluated
      * @return True if the index is between 0 and the length of the list, false otherwise
      */
-    private boolean isValidIndex(int index) {
+    public boolean isValidIndex(int index) {
         return 0 <= index && index <= this.length;
     }
 
@@ -227,4 +219,35 @@ public class LinkedList<T> {
         str.append("]");
         return str.toString();
     }
+
+
+    /**
+     * This method verifies if two linkedList have the same elements in the same order
+     *
+     * @param otherList the list to be compared
+     * @return true if both contains the same elements, false otherwise
+     */
+    public boolean equals(LinkedList<T> otherList) {
+        if (this == otherList) {
+            return true;
+        }
+
+        if (this.length != otherList.getLength()) {
+            return false;
+        }
+
+        Node<T> thisNode = this.head;
+        Node<T> otherNode = otherList.getHead();
+
+        while (thisNode != null && otherNode != null) {
+            if (!thisNode.hasValue(otherNode.getValue())) {
+                return false;
+            }
+            thisNode = thisNode.getNextNode();
+            otherNode = otherNode.getNextNode();
+        }
+
+        return true;
+    }
+
 }
