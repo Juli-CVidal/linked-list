@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,6 +15,33 @@ import lombok.Setter;
 public class LinkedList<T> {
     private Node<T> head;
     private int length = 0;
+
+    public LinkedList(T[] list) {
+        this.length = list.length;
+        Node<T> currentNode = new Node<>(list[0]);
+        this.head = currentNode;
+
+        for (int index = 1; index < this.length; index++) {
+            currentNode.setNextNode(new Node<>(list[index]));
+            currentNode = currentNode.getNextNode();
+        }
+    }
+
+
+    /**
+     * Converts the LinkedList to a normal list
+     *
+     * @return T[] the list that contains all the elements of the LinkedList
+     */
+    public T[] toList() {
+        Object[] tempList = new Object[this.length];
+        int index = 0;
+        for (Node<T> currentNode = this.head; currentNode != null; currentNode = currentNode.getNextNode()) {
+            tempList[index++] = currentNode.getValue();
+        }
+
+        return (T[]) Arrays.copyOf(tempList, this.length);
+    }
 
 
     /**
@@ -50,11 +79,12 @@ public class LinkedList<T> {
 
     /**
      * @param targetIndex The index of the node to return
-     * @return The node that is in the indicated index
+     * @return The node that is in the indicated index. If not found, will return null
      */
     public Node<T> getNodeAtIndex(int targetIndex) {
         if (!isValidIndex(targetIndex)) {
-            return null;
+            throw new IllegalArgumentException("Invalid index: " + targetIndex +
+                    ". Must be between 0 and the LinkedList lenght");
         }
 
         int index = 0;
@@ -77,7 +107,8 @@ public class LinkedList<T> {
      */
     public boolean insert(T value, int index) {
         if (!isValidIndex(index)) {
-            return false;
+            throw new IllegalArgumentException("Invalid index: " + index +
+                    ". Must be between 0 and the LinkedList lenght");
         }
         if (index == 0) {
             add(value);
@@ -135,7 +166,8 @@ public class LinkedList<T> {
      */
     public boolean deleteByIndex(int index) {
         if (!isValidIndex(index)) {
-            return false;
+            throw new IllegalArgumentException("Invalid index: " + index +
+                    ". Must be between 0 and the LinkedList lenght");
         }
 
         if (index == 0) {
@@ -150,11 +182,49 @@ public class LinkedList<T> {
         return true;
     }
 
+
+    /**
+     * @param value The value to be updated
+     * @param index The index of the node
+     * @return true if the update has been possible, false otherwise
+     */
+    public boolean updateNode(T value, int index) {
+        if (!isValidIndex(index)) {
+            throw new IllegalArgumentException("Invalid index: " + index +
+                    ". Must be between 0 and the LinkedList lenght");
+        }
+
+        Node<T> node = getNodeAtIndex(index);
+        node.setValue(value);
+        return true;
+    }
+
+
     /**
      * @param index The index to be evaluated
      * @return True if the index is between 0 and the length of the list, false otherwise
      */
     private boolean isValidIndex(int index) {
         return 0 <= index && index <= this.length;
+    }
+
+
+    @Override
+    public String toString() {
+        if (this.head == null) {
+            return "[]";
+        }
+        StringBuilder str = new StringBuilder("[");
+        Node<T> currentNode = this.head;
+
+        while (currentNode != null) {
+            str.append(currentNode.getValue());
+            currentNode = currentNode.getNextNode();
+            if (currentNode != null) {
+                str.append(", ");
+            }
+        }
+        str.append("]");
+        return str.toString();
     }
 }

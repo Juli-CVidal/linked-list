@@ -26,4 +26,10 @@ public class Node<T> {
     public boolean hasValue(T value) {
         return this.value.equals(value);
     }
+
+
+    @Override
+    public String toString() {
+        return "" + this.value;
+    }
 }
